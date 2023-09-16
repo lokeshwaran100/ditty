@@ -2,7 +2,7 @@
 Decentralized chit funds aka kitty application build on Solana blockchain
 
 
-A decentralized chit fund application built on Solana blockchain is a type of financial application that allows users to create and manage chit funds in a trustless and secure manner. Chit funds are a type of informal savings scheme that is popular in many developing countries. In a chit fund, each member contributes a fixed amount of money on a regular basis. The total amount of money collected is then distributed to one member of the group, who is selected through a lottery or auction.
+A Decentralized chit fund application built on Solana blockchain is a type of financial application that allows users to create and manage chit funds in a trustless and secure manner. Chit funds are a type of informal savings scheme that is popular in many developing countries. In a chit fund, each member contributes a fixed amount of money on a regular basis. The total amount of money collected is then distributed to one member of the group, who is selected through a lottery or auction.
 
 Decentralized chit fund applications use blockchain technology to store and manage the data associated with the chit fund. This means that the data is transparent and tamper-proof. It also means that the chit fund can operate without the need for a central authority.
 
