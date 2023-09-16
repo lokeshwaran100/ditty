@@ -5,6 +5,15 @@ const organiser = pg.wallet;
 const participant_02 = web3.Keypair.generate();
 const participant_03 = web3.Keypair.generate();
 const chit_fund_account = web3.Keypair.generate();
+//await pg.connection.trans
+const transaction_01 = new web3.Transaction().add(web3.SystemProgram.transfer({fromPubkey: organiser.publicKey, toPubkey: participant_02.publicKey, lamports: web3.LAMPORTS_PER_SOL / 1000}));
+await web3.sendAndConfirmTransaction(pg.connection, transaction_01, [organiser.keypair]);
+const transaction_02 = new web3.Transaction().add(web3.SystemProgram.transfer({fromPubkey: organiser.publicKey, toPubkey: participant_03.publicKey, lamports: web3.LAMPORTS_PER_SOL / 1000}));
+await web3.sendAndConfirmTransaction(pg.connection, transaction_02, [organiser.keypair]);
+const transaction_03 = new web3.Transaction().add(web3.SystemProgram.transfer({fromPubkey: organiser.publicKey, toPubkey: chit_fund_account.publicKey, lamports: web3.LAMPORTS_PER_SOL / 1000}));
+await web3.sendAndConfirmTransaction(pg.connection, transaction_03, [organiser.keypair]);
+//await pg.connection.requestAirdrop(participant_02.publicKey, 10000);
+//await pg.connection.requestAirdrop(participant_03.publicKey, 10000);
 
 async function join(chit_fund_account, participant) {
   const txHash = await pg.program.methods
@@ -58,6 +67,44 @@ async function bid(chit_fund_account, participant, amount) {
   display(created_chit_fund_account);
 }
 
+async function deposit(chit_fund_account, participant, bid_winner, amount) {
+  const txHash = await pg.program.methods
+    .deposit(amount)
+    .accounts({
+      chitFund: chit_fund_account.publicKey,
+      participant: participant.publicKey,
+      bidWinner: bid_winner.publicKey,
+      cf: chit_fund_account.publicKey,
+      systemProgram: web3.SystemProgram.programId,
+    })
+    .signers(participant)
+    .rpc();
+  console.log(`Use 'solana confirm -v ${txHash}' to see the logs`);
+
+  // Confirm transaction
+  await pg.connection.confirmTransaction(txHash);
+
+  // Fetch the created account
+  const created_chit_fund_account = await pg.program.account.chitFund.fetch(
+    chit_fund_account.publicKey
+  );
+
+  // console.log("Player 1:", created_chit_fund_account.players[0].toString());
+  // console.log("Player 2:", created_chit_fund_account.players[1].toString());
+  // console.log("Player 1 Moves:", created_chit_fund_account.organiserMovePos.toString());
+  // console.log("Player 2 Moves:", created_chit_fund_account.participantMovePos.toString());
+  display(created_chit_fund_account);
+}
+
+async function displayBalance() {
+  const balance_01 = await pg.connection.getBalance(organiser.publicKey);
+  console.log("Organiser Balance     :", balance_01);
+  const balance_02 = await pg.connection.getBalance(participant_02.publicKey);
+  console.log("Organiser Balance     :", balance_02);
+  const balance_03 = await pg.connection.getBalance(participant_03.publicKey);
+  console.log("Organiser Balance     :", balance_03);
+}
+
 function display(created_chit_fund_account) {
 	//console.log("name:", created_chit_fund_account.name.toString());
 	//console.log("participant_count:", created_chit_fund_account.participantCount.toString());
@@ -70,6 +117,7 @@ function display(created_chit_fund_account) {
 	console.log("days_left:", created_chit_fund_account.daysLeft.toString());
 	console.log("bid_winner:", created_chit_fund_account.bidWinner.toString());
 	console.log("lowest_bid_amount:", created_chit_fund_account.lowestBidAmount.toString());
+  
 	console.log("================================================================");
 }
 
@@ -96,10 +144,21 @@ const created_chit_fund_account = await pg.program.account.chitFund.fetch(
 display(created_chit_fund_account);
 
 ///////////////////
-// Player 2 Wins //
+// Scenario //
 ///////////////////
 await join(chit_fund_account, participant_02);
+await displayBalance();
 await join(chit_fund_account, participant_03);
-await bid(chit_fund_account, participant_02, 1000);
-await bid(chit_fund_account, participant_03, 1000);
-await bid(chit_fund_account, organiser.keypair, 9500);
+await displayBalance();
+await bid(chit_fund_account, participant_02, 3000);
+await displayBalance();
+await bid(chit_fund_account, participant_03, 3000);
+await displayBalance();
+await bid(chit_fund_account, organiser.keypair, 1500);
+await displayBalance();
+// 5EZKmFpo7vDxcjruzyM3q5PrQHaqx2VnSM9QasZUpVta
+await deposit(chit_fund_account, participant_02, organiser.keypair, 500);
+await displayBalance();
+await deposit(chit_fund_account, participant_03, organiser.keypair, 500);
+await displayBalance();
+// await deposit(chit_fund_account, participant_03, 500);

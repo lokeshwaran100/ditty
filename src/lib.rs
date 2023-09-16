@@ -45,46 +45,59 @@ mod ditty {
     }
 
     // Define the Deposit instruction for participants to deposit funds
-    pub fn deposit(ctx: Context<DepositChitFund>, amount: u64) -> Result<()> {
+    pub fn deposit(ctx: Context<DepositChitFund>, amount: u32) -> Result<()> {
         ctx.accounts
             .chit_fund
-            .deposit(ctx.accounts.participant.key(), amount)?;
+            .deposit(ctx.accounts.participant.key(), amount as u64)?;
 
-        // **ctx.accounts.chit_fund.to_account_info().try_borrow_lamports()? += amount;
-        // **ctx.accounts.participant.try_borrow_mut_lamports()? -= amount;
+        if **ctx.accounts.participant.try_borrow_lamports()? < amount as u64 {
+            return Err(CErrorCode::InsufficientFundsForTransaction.into());
+        }
+
+        // **ctx.accounts.participant.try_borrow_mut_lamports()? -= amount as u64;
+        // **ctx.accounts.cf.try_borrow_mut_lamports()? += amount as u64;
+        // let &mut cf = **ctx.accounts.chit_fund;
+        // let &mut account_info = ctx.accounts.chit_fund.to_account_info();
+        // **account_info.try_borrow_lamports()? += amount as u64;
 
         // let sol_in_lamports: u64 = amount * 1000000;
 
         let sol_transfer = anchor_lang::solana_program::system_instruction::transfer(
             &ctx.accounts.participant.key(),
             &ctx.accounts.chit_fund.key(),
-            amount,
+            amount as u64,
         );
         anchor_lang::solana_program::program::invoke(
             &sol_transfer,
             &[
                 ctx.accounts.participant.to_account_info().clone(),
-                ctx.accounts.chit_fund.to_account_info().clone(),
-                ctx.accounts.system_program.clone(),
+                ctx.accounts.cf.to_account_info().clone(),
+                ctx.accounts.system_program.to_account_info().clone(),
             ],
         )?;
 
         if ctx.accounts.chit_fund.send_to_bidwinner() {
-            let lamports: u64 = ctx.accounts.chit_fund.to_account_info().lamports();
+            let lamports: u64 = ctx.accounts.chit_fund.lowest_bid_amount - (ctx.accounts.chit_fund.lowest_bid_amount / PARTICIPANT_COUNT as u64);
 
-            let sol_transfer = anchor_lang::solana_program::system_instruction::transfer(
-                &ctx.accounts.chit_fund.key(),
-                &ctx.accounts.bid_winner.key(),
-                lamports,
-            );
-            anchor_lang::solana_program::program::invoke(
-                &sol_transfer,
-                &[
-                    ctx.accounts.chit_fund.to_account_info().clone(),
-                    ctx.accounts.bid_winner.clone(),
-                    ctx.accounts.system_program.clone(),
-                ],
-            )?;
+            // if lamports <= 0 {
+            //     return Err(CErrorCode::InsufficientFundsForTransaction.into());
+            // }
+
+            **ctx.accounts.chit_fund.to_account_info().try_borrow_mut_lamports()? -= lamports;
+            **ctx.accounts.bid_winner.try_borrow_mut_lamports()? += lamports;
+            // let sol_transfer = anchor_lang::solana_program::system_instruction::transfer(
+            //     &ctx.accounts.cf.key(),
+            //     &ctx.accounts.bid_winner.key(),
+            //     lamports,
+            // );
+            // anchor_lang::solana_program::program::invoke(
+            //     &sol_transfer,
+            //     &[
+            //         ctx.accounts.cf.to_account_info().clone(),
+            //         ctx.accounts.bid_winner.clone(),
+            //         ctx.accounts.system_program.clone(),
+            //     ],
+            // )?;
 
             ctx.accounts.chit_fund.clean_biddings()?;
         }
@@ -105,7 +118,7 @@ pub struct InitializeChitFund<'info> {
     #[account(mut)]
     pub organiser: Signer<'info>,
     pub system_program: Program<'info, System>,
-}   
+}
 
 #[derive(Accounts)]
 pub struct JoinChitFund<'info> {
@@ -127,7 +140,10 @@ pub struct DepositChitFund<'info> {
     pub chit_fund: Account<'info, ChitFund>,
     #[account(mut)]
     pub bid_winner: AccountInfo<'info>,
+    #[account(mut)]
     pub participant: Signer<'info>,
+    #[account(mut)]
+    pub cf: AccountInfo<'info>,
     pub system_program: AccountInfo<'info>,
 }
 
@@ -182,7 +198,13 @@ impl ChitFundStatus {
 
 impl ChitFund {
     // Based on account varfiable sizes
-    pub const MAXIMUM_SIZE: usize = (32 * 3) + (64 * 4) + (32 * 2) + 32 + 2 + (32 + 2)  * PARTICIPANT_COUNT + (32 + 64) * PARTICIPANT_COUNT;
+    pub const MAXIMUM_SIZE: usize = (32 * 3)
+        + (64 * 4)
+        + (32 * 2)
+        + 32
+        + 2
+        + (32 + 2) * PARTICIPANT_COUNT
+        + (32 + 64) * PARTICIPANT_COUNT;
 
     // Organiser initializes the ChitFund account
     fn new(
@@ -231,7 +253,7 @@ impl ChitFund {
 
     fn evaluate_bid_winner(&mut self) -> Result<()> {
         for bid in self.bids.iter() {
-            self.lowest_bid_amount = self.commited_amount;
+            self.lowest_bid_amount = self.commited_amount * (PARTICIPANT_COUNT as u64);
             if bid.amount < self.lowest_bid_amount {
                 self.lowest_bid_amount = bid.amount;
                 self.bid_winner = bid.bidder;
@@ -249,8 +271,10 @@ impl ChitFund {
         if self.status != ChitFundStatus::BiddingOpen {
             return Err(CErrorCode::NoBids.into());
         }
-        msg!("moves[{:?}]:{:?}, element:{:?}", i, moves[i as usize] as u8, *elem as u8);
-        if ((Clock::get()?.unix_timestamp - self.create_time) / 86400) as u32 != self.current_month - 1 {
+        //msg!("moves[{:?}]:{:?}, element:{:?}", i, moves[i as usize] as u8, *elem as u8);
+        if ((Clock::get()?.unix_timestamp - self.create_time) / 86400) as u32
+            != self.current_month - 1
+        {
             return Err(CErrorCode::BiddingMonthNotStarted.into());
         }
 
@@ -322,14 +346,15 @@ impl ChitFund {
         }
 
         let days_passed = (Clock::get()?.unix_timestamp - self.bidding_start_time / 86400) as i64;
-        if self.days_left + days_passed as u32 > 30 {
-            self.status = ChitFundStatus::Closed;
-            return Err(CErrorCode::InsufficientParticipation.into());
-        }
+        // msg!("days_passed={:?}", days_passed);
+        // if self.days_left + days_passed as u32 > 30 {
+        //     self.status = ChitFundStatus::Closed;
+        //     return Err(CErrorCode::InsufficientParticipation.into());
+        // }
 
-        if amount != self.lowest_bid_amount {
-            return Err(CErrorCode::InvalidBidAmount.into());
-        }
+        // if amount != self.lowest_bid_amount / PARTICIPANT_COUNT as u64 {
+        //     return Err(CErrorCode::InvalidBidAmount.into());
+        // }
 
         if self
             .depositors
@@ -349,7 +374,7 @@ impl ChitFund {
     }
 
     pub fn send_to_bidwinner(&mut self) -> bool {
-        if self.depositors.len() == (self.participant_count as usize) {
+        if self.depositors.len() == (self.participant_count as usize - 1) {
             return true;
         }
 
@@ -421,4 +446,7 @@ pub enum CErrorCode {
 
     #[msg("Bid month not started")]
     BiddingMonthNotStarted,
+
+    #[msg("Insufficient funds")]
+    InsufficientFundsForTransaction,
 }
