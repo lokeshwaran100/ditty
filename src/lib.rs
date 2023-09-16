@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use std::string::String;
 use std::vec;
 
-pub const PARTICIPANT_COUNT: usize = 10;
+pub const PARTICIPANT_COUNT: usize = 3;
 
 declare_id!("4bXxZicaQg3atfVBkUJzvDw9ryRdxj2KzVrRRYYjzVVq");
 
@@ -11,17 +11,16 @@ mod ditty {
     use super::*;
 
     // Define the InitializeChitFund instruction for the organizer to initialize the contract
-    pub fn initialize_chit_fund(
+    pub fn initializechitfund(
         ctx: Context<InitializeChitFund>,
         name: String,
-        participant_count: u32,
-        commited_amount: u64,
+        commitedamount: u32,
     ) -> Result<()> {
         ctx.accounts.chit_fund.new(
             ctx.accounts.organiser.key(),
             name,
-            participant_count,
-            commited_amount,
+            PARTICIPANT_COUNT as u32,
+            commitedamount as u64,
         )?;
 
         Ok(())
@@ -37,10 +36,10 @@ mod ditty {
     }
 
     // Define the Bid instruction for participants to place bids
-    pub fn bid(ctx: Context<BidChitFund>, amount: u64) -> Result<()> {
+    pub fn bid(ctx: Context<BidChitFund>, amount: u32) -> Result<()> {
         ctx.accounts
             .chit_fund
-            .bid(ctx.accounts.participant.key(), amount)?;
+            .bid(ctx.accounts.participant.key(), amount as u64)?;
 
         Ok(())
     }
@@ -54,12 +53,12 @@ mod ditty {
         // **ctx.accounts.chit_fund.to_account_info().try_borrow_lamports()? += amount;
         // **ctx.accounts.participant.try_borrow_mut_lamports()? -= amount;
 
-        let sol_in_lamports: u64 = amount * 1000000;
+        // let sol_in_lamports: u64 = amount * 1000000;
 
         let sol_transfer = anchor_lang::solana_program::system_instruction::transfer(
             &ctx.accounts.participant.key(),
             &ctx.accounts.chit_fund.key(),
-            sol_in_lamports,
+            amount,
         );
         anchor_lang::solana_program::program::invoke(
             &sol_transfer,
@@ -106,7 +105,7 @@ pub struct InitializeChitFund<'info> {
     #[account(mut)]
     pub organiser: Signer<'info>,
     pub system_program: Program<'info, System>,
-}
+}   
 
 #[derive(Accounts)]
 pub struct JoinChitFund<'info> {
@@ -250,7 +249,7 @@ impl ChitFund {
         if self.status != ChitFundStatus::BiddingOpen {
             return Err(CErrorCode::NoBids.into());
         }
-
+        msg!("moves[{:?}]:{:?}, element:{:?}", i, moves[i as usize] as u8, *elem as u8);
         if ((Clock::get()?.unix_timestamp - self.create_time) / 86400) as u32 != self.current_month - 1 {
             return Err(CErrorCode::BiddingMonthNotStarted.into());
         }
