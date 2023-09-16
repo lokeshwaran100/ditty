@@ -100,25 +100,26 @@ async function displayBalance() {
   const balance_01 = await pg.connection.getBalance(organiser.publicKey);
   console.log("Organiser Balance     :", balance_01);
   const balance_02 = await pg.connection.getBalance(participant_02.publicKey);
-  console.log("Organiser Balance     :", balance_02);
+  console.log("Participant 01 Balance:", balance_02);
   const balance_03 = await pg.connection.getBalance(participant_03.publicKey);
-  console.log("Organiser Balance     :", balance_03);
+  console.log("Participant 02 Balance:", balance_03);
+  const balance_04 = await pg.connection.getBalance(chit_fund_account.publicKey);
+  console.log("Chit Fund Balance     :", balance_04);
 }
 
 function display(created_chit_fund_account) {
+	console.log("================================================================");
 	//console.log("name:", created_chit_fund_account.name.toString());
 	//console.log("participant_count:", created_chit_fund_account.participantCount.toString());
 	//console.log("commited_amount:", created_chit_fund_account.commitedAmount.toString());
 	//console.log("organizer:", created_chit_fund_account.organizer.toString());
 	console.log("status:", created_chit_fund_account.status);
-	console.log("create_time:", created_chit_fund_account.createTime.toString());
-	console.log("bidding_start_time:", created_chit_fund_account.biddingStartTime.toString());
+	//console.log("create_time:", created_chit_fund_account.createTime.toString());
+	//console.log("bidding_start_time:", created_chit_fund_account.biddingStartTime.toString());
 	console.log("current_month:", created_chit_fund_account.currentMonth.toString());
-	console.log("days_left:", created_chit_fund_account.daysLeft.toString());
+	//console.log("days_left:", created_chit_fund_account.daysLeft.toString());
 	console.log("bid_winner:", created_chit_fund_account.bidWinner.toString());
 	console.log("lowest_bid_amount:", created_chit_fund_account.lowestBidAmount.toString());
-  
-	console.log("================================================================");
 }
 
 // Send transaction
@@ -142,6 +143,7 @@ const created_chit_fund_account = await pg.program.account.chitFund.fetch(
 );
 
 display(created_chit_fund_account);
+await displayBalance();
 
 ///////////////////
 // Scenario //
