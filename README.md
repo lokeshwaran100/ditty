@@ -9,9 +9,13 @@ Decentralized chit fund applications use blockchain technology to store and mana
 Here are some of the benefits of using a decentralized chit fund application:
 
 Transparency: All of the data associated with the chit fund is stored on the blockchain, which makes it transparent and tamper-proof.
+
 Security: The blockchain is a secure and reliable platform for storing and managing financial data.
+
 Efficiency: Decentralized chit fund applications can be more efficient than traditional chit funds because they eliminate the need for a central authority.
+
 Accessibility: Decentralized chit fund applications can be accessed by anyone with an internet connection, regardless of their location.
+
 Here is a simple example of how a decentralized chit fund application could work:
 
 A user creates a new chit fund on the blockchain.
