@@ -1,12 +1,10 @@
 # Ditty
-Decentralized chit funds aka kitty application build on Solana blockchain
+Decentralized kitty parties aka chit funds application build on Solana blockchain
 
 
-A Decentralized chit fund application built on Solana blockchain is a type of financial application that allows users to create and manage chit funds in a trustless and secure manner. Chit funds are a type of informal savings scheme that is popular in many developing countries. In a chit fund, each member contributes a fixed amount of money on a regular basis. The total amount of money collected is then distributed to one member of the group, who is selected through a lottery or auction.
+A Decentralized chit fund application built on Solana blockchain is a type of financial application that allows users to create and manage kitty parties in a trustless and secure manner. Chit funds are a type of informal savings scheme that is popular in many developing countries. In a chit fund, each member contributes a fixed amount of money on a regular basis. The total amount of money collected is then distributed to one member of the group, who is selected through a auction.
 
-Decentralized chit fund applications use blockchain technology to store and manage the data associated with the chit fund. This means that the data is transparent and tamper-proof. It also means that the chit fund can operate without the need for a central authority.
-
-Apart from Transparency & Security here are some of the benefits of using Ditty app:
+**Apart from Transparency & Security here are some of the benefits of using Ditty app:**
 
 **Enhancing Borrower Accountability:**
 Lending money to a close friend can be a daunting prospect, as it often leads to uncertainty regarding repayment. However, with a ditty, the borrowing process becomes more accountable. This accountability stems from involving multiple individuals who are intimately acquainted with the borrower, making it more likely that borrowed funds will be returned as agreed upon.
