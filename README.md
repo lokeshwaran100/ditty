@@ -26,9 +26,13 @@ All transactions and agreements on the Solana blockchain are immutable, meaning 
 Here is a simple example of how a decentralized chit fund application could work:
 
 1) A user creates a new chit fund on the blockchain.
-2) Other users can then join the chit fund by contributing a fixed amount of money on a regular basis.
+   
+2) Users can join by contributing a fixed amount regularly.
+
 3) The total amount of money collected is then distributed to one member of the group, who is selected through a lottery or auction.
+   
 4) The process is repeated until all of the members of the group have received a payout.
+   
 5) Decentralized chit fund applications are still in their early stages of development, but they have the potential to revolutionize the way that chit funds are managed. By using blockchain technology, decentralized chit fund applications can offer a number of benefits, including transparency, security, efficiency, and accessibility.
 
 
