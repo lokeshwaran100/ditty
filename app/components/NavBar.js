@@ -10,7 +10,7 @@ const WalletMultiButtonDynamic = dynamic(
 
 const NavBar = () => {
   return (
-    <div className='bg-[#ccffff]'>
+    <div className=''>
         <nav className=" mx-8 p-4">
         <div className="flex items-center  justify-between">
             <Image src={logo} alt="Your Logo" className="w-12 h-auto" />
