@@ -21,13 +21,14 @@ mod ditty {
             name,
             PARTICIPANT_COUNT as u32,
             commitedamount as u64,
+            *ctx.bumps.get("chit_fund").unwrap(),
         )?;
 
         Ok(())
     }
 
     // Define the JoinChitFund instruction for participants to join the chit fund
-    pub fn join(ctx: Context<JoinChitFund>) -> Result<()> {
+    pub fn join(ctx: Context<JoinChitFund>, name: String) -> Result<()> {
         ctx.accounts
             .chit_fund
             .join(ctx.accounts.participant.key())?;
@@ -36,7 +37,7 @@ mod ditty {
     }
 
     // Define the Bid instruction for participants to place bids
-    pub fn bid(ctx: Context<BidChitFund>, amount: u32) -> Result<()> {
+    pub fn bid(ctx: Context<BidChitFund>, name: String, amount: u32) -> Result<()> {
         ctx.accounts
             .chit_fund
             .bid(ctx.accounts.participant.key(), amount as u64)?;
@@ -45,7 +46,7 @@ mod ditty {
     }
 
     // Define the Deposit instruction for participants to deposit funds
-    pub fn deposit(ctx: Context<DepositChitFund>, amount: u32) -> Result<()> {
+    pub fn deposit(ctx: Context<DepositChitFund>, name: String, amount: u32) -> Result<()> {
         ctx.accounts
             .chit_fund
             .deposit(ctx.accounts.participant.key(), amount as u64)?;
@@ -77,13 +78,18 @@ mod ditty {
         )?;
 
         if ctx.accounts.chit_fund.send_to_bidwinner() {
-            let lamports: u64 = ctx.accounts.chit_fund.lowest_bid_amount - (ctx.accounts.chit_fund.lowest_bid_amount / PARTICIPANT_COUNT as u64);
+            let lamports: u64 = ctx.accounts.chit_fund.lowest_bid_amount
+                - (ctx.accounts.chit_fund.lowest_bid_amount / PARTICIPANT_COUNT as u64);
 
             // if lamports <= 0 {
             //     return Err(CErrorCode::InsufficientFundsForTransaction.into());
             // }
 
-            **ctx.accounts.chit_fund.to_account_info().try_borrow_mut_lamports()? -= lamports;
+            **ctx
+                .accounts
+                .chit_fund
+                .to_account_info()
+                .try_borrow_mut_lamports()? -= lamports;
             **ctx.accounts.bid_winner.try_borrow_mut_lamports()? += lamports;
             // let sol_transfer = anchor_lang::solana_program::system_instruction::transfer(
             //     &ctx.accounts.cf.key(),
@@ -112,31 +118,38 @@ mod ditty {
 }
 
 #[derive(Accounts)]
+#[instruction(name: String)]
 pub struct InitializeChitFund<'info> {
-    #[account(init, payer = organiser, space = 64 +  ChitFund::MAXIMUM_SIZE)]
-    pub chit_fund: Account<'info, ChitFund>,
     #[account(mut)]
     pub organiser: Signer<'info>,
+    #[account(init_if_needed, payer = organiser, space = 64 +  ChitFund::MAXIMUM_SIZE, seeds = [name.as_bytes().as_ref(), organiser.key().as_ref()], bump)]
+    pub chit_fund: Account<'info, ChitFund>,
     pub system_program: Program<'info, System>,
 }
 
 #[derive(Accounts)]
+#[instruction(name: String)]
 pub struct JoinChitFund<'info> {
-    #[account(mut)]
+    pub organiser: AccountInfo<'info>,
+    #[account(mut, seeds = [name.as_bytes().as_ref(), organiser.key().as_ref()], bump = chit_fund.bump)]
     pub chit_fund: Account<'info, ChitFund>,
     pub participant: Signer<'info>,
 }
 
 #[derive(Accounts)]
+#[instruction(name: String)]
 pub struct BidChitFund<'info> {
-    #[account(mut)]
+    pub organiser: AccountInfo<'info>,
+    #[account(mut, seeds = [name.as_bytes().as_ref(), organiser.key().as_ref()], bump = chit_fund.bump)]
     pub chit_fund: Account<'info, ChitFund>,
     pub participant: Signer<'info>,
 }
 
 #[derive(Accounts)]
+#[instruction(name: String)]
 pub struct DepositChitFund<'info> {
-    #[account(mut)]
+    pub organiser: AccountInfo<'info>,
+    #[account(mut, seeds = [name.as_bytes().as_ref(), organiser.key().as_ref()], bump = chit_fund.bump)]
     pub chit_fund: Account<'info, ChitFund>,
     #[account(mut)]
     pub bid_winner: AccountInfo<'info>,
@@ -152,6 +165,7 @@ pub struct DepositChitFund<'info> {
 
 #[account]
 pub struct ChitFund {
+    pub bump: u8,
     pub name: String,
     pub participant_count: u32,
     pub commited_amount: u64,
@@ -213,6 +227,7 @@ impl ChitFund {
         name: String,
         participant_count: u32,
         commited_amount: u64,
+        bump: u8,
     ) -> Result<()> {
         self.name = name;
         self.participant_count = participant_count;
@@ -221,6 +236,7 @@ impl ChitFund {
         self.status = ChitFundStatus::Open;
         self.create_time = 0;
         self.current_month = 1;
+        self.bump = bump;
 
         // Add organiser as participant to the chit fund
         self.participants.push(Participant {

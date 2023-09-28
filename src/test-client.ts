@@ -1,22 +1,28 @@
+const chit_fund_name = "4"
 const organiser = pg.wallet;
 
 // Generate keypair for the new account
 const participant_02 = web3.Keypair.generate();
 const participant_03 = web3.Keypair.generate();
-const chit_fund_account = web3.Keypair.generate();
-
+const [chit_fund_account, _] = await web3.PublicKey.findProgramAddress(
+  [anchor.utils.bytes.utf8.encode(chit_fund_name), organiser.publicKey.toBuffer()],
+  pg.program.programId
+);
+console.log("Trace 1")
 const transaction_01 = new web3.Transaction().add(web3.SystemProgram.transfer({fromPubkey: organiser.publicKey, toPubkey: participant_02.publicKey, lamports: web3.LAMPORTS_PER_SOL / 1000}));
 await web3.sendAndConfirmTransaction(pg.connection, transaction_01, [organiser.keypair]);
 const transaction_02 = new web3.Transaction().add(web3.SystemProgram.transfer({fromPubkey: organiser.publicKey, toPubkey: participant_03.publicKey, lamports: web3.LAMPORTS_PER_SOL / 1000}));
 await web3.sendAndConfirmTransaction(pg.connection, transaction_02, [organiser.keypair]);
-const transaction_03 = new web3.Transaction().add(web3.SystemProgram.transfer({fromPubkey: organiser.publicKey, toPubkey: chit_fund_account.publicKey, lamports: web3.LAMPORTS_PER_SOL / 1000}));
-await web3.sendAndConfirmTransaction(pg.connection, transaction_03, [organiser.keypair]);
+// const transaction_03 = new web3.Transaction().add(web3.SystemProgram.transfer({fromPubkey: organiser.publicKey, toPubkey: chit_fund_account.publicKey, lamports: web3.LAMPORTS_PER_SOL / 1000}));
+// await web3.sendAndConfirmTransaction(pg.connection, transaction_03, [organiser.keypair]);
 
+console.log("Trace 2")
 async function join(chit_fund_account, participant) {
   const txHash = await pg.program.methods
-    .join()
+    .join(chit_fund_name)
     .accounts({
-      chitFund: chit_fund_account.publicKey,
+      organiser: organiser.publicKey,
+      chitFund: chit_fund_account,
       participant: participant.publicKey,
     })
     .signers(participant)
@@ -30,9 +36,10 @@ async function join(chit_fund_account, participant) {
 
 async function bid(chit_fund_account, participant, amount) {
    const txHash = await pg.program.methods
-    .bid(amount)
+    .bid(chit_fund_name, amount)
     .accounts({
-      chitFund: chit_fund_account.publicKey,
+      organiser: organiser.publicKey,
+      chitFund: chit_fund_account,
       participant: participant.publicKey,
     })
     .signers(participant)
@@ -46,12 +53,13 @@ async function bid(chit_fund_account, participant, amount) {
 
 async function deposit(chit_fund_account, participant, bid_winner, amount) {
   const txHash = await pg.program.methods
-    .deposit(amount)
+    .deposit(chit_fund_name, amount)
     .accounts({
-      chitFund: chit_fund_account.publicKey,
+      organiser: organiser.publicKey,
+      chitFund: chit_fund_account,
       participant: participant.publicKey,
       bidWinner: bid_winner.publicKey,
-      cf: chit_fund_account.publicKey,
+      cf: chit_fund_account,
       systemProgram: web3.SystemProgram.programId,
     })
     .signers(participant)
@@ -66,7 +74,7 @@ async function deposit(chit_fund_account, participant, bid_winner, amount) {
 
 async function display() {
 	const created_chit_fund_account = await pg.program.account.chitFund.fetch(
-	chit_fund_account.publicKey
+	chit_fund_account
 	);
 	//console.log("name:", created_chit_fund_account.name.toString());
 	//console.log("participant_count:", created_chit_fund_account.participantCount.toString());
@@ -100,13 +108,13 @@ async function create()
 {
    // Send transaction
    const txHash = await pg.program.methods
-     .initializechitfund("Test", 1000)
+     .initializechitfund(chit_fund_name, 1000)
      .accounts({
-       chitFund: chit_fund_account.publicKey,
+       chitFund: chit_fund_account,
        organiser: organiser.publicKey,
        systemProgram: web3.SystemProgram.programId,
      })
-     .signers([chit_fund_account])
+     .signers([organiser.keypair])
      .rpc();
    
    // Confirm transaction
@@ -125,7 +133,7 @@ function action(message){
 ///////////////////
 // Scenario //
 ///////////////////
-action("Organiser creating chit fund")
+action("Organiser/Participant 1 creating chit fund")
 await create();
 action("Participant 2 Joins")
 await join(chit_fund_account, participant_02);
@@ -133,7 +141,7 @@ action("Participant 3 Joins")
 await join(chit_fund_account, participant_03);
 action("Participant 2 Bids")
 await bid(chit_fund_account, participant_02, 3000);
-action("Participant 2 Bids")
+action("Participant 3 Bids")
 await bid(chit_fund_account, participant_03, 3000);
 action("Participant 1 Bids")
 await bid(chit_fund_account, organiser.keypair, 1500);
