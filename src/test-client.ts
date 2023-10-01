@@ -1,4 +1,4 @@
-const chit_fund_name = "4"
+const chit_fund_name = "5"
 const organiser = pg.wallet;
 
 // Generate keypair for the new account
@@ -8,7 +8,6 @@ const [chit_fund_account, _] = await web3.PublicKey.findProgramAddress(
   [anchor.utils.bytes.utf8.encode(chit_fund_name), organiser.publicKey.toBuffer()],
   pg.program.programId
 );
-console.log("Trace 1")
 const transaction_01 = new web3.Transaction().add(web3.SystemProgram.transfer({fromPubkey: organiser.publicKey, toPubkey: participant_02.publicKey, lamports: web3.LAMPORTS_PER_SOL / 1000}));
 await web3.sendAndConfirmTransaction(pg.connection, transaction_01, [organiser.keypair]);
 const transaction_02 = new web3.Transaction().add(web3.SystemProgram.transfer({fromPubkey: organiser.publicKey, toPubkey: participant_03.publicKey, lamports: web3.LAMPORTS_PER_SOL / 1000}));
@@ -16,7 +15,6 @@ await web3.sendAndConfirmTransaction(pg.connection, transaction_02, [organiser.k
 // const transaction_03 = new web3.Transaction().add(web3.SystemProgram.transfer({fromPubkey: organiser.publicKey, toPubkey: chit_fund_account.publicKey, lamports: web3.LAMPORTS_PER_SOL / 1000}));
 // await web3.sendAndConfirmTransaction(pg.connection, transaction_03, [organiser.keypair]);
 
-console.log("Trace 2")
 async function join(chit_fund_account, participant) {
   const txHash = await pg.program.methods
     .join(chit_fund_name)
