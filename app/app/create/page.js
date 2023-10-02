@@ -3,20 +3,26 @@ import React, { useState } from 'react'
 import FormField from '@/components/FormField'
 import CustomButton from '@/components/CustomButton'
 import { useStateContext } from '@/context'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 const CreateComponent = () => {
   // to get fetch the function from StateContext
-  const {createChitFund}=useStateContext();
+  const {createChitFund,getCount,url}=useStateContext();
+
+  const {publicKey}=useWallet();
 
   // to display the creation message
   const [isCreated,setIsCreated]=useState(false);
   const [form,setForm]=useState({
+    Id:'',
+    Organizer:'',
     Name:'',
     FundName:'',
     Description:'',
     TotalPot:'',
     DeadLine:'',
   });
+  const [joinUrl, setJoinUrl] = useState(url);
 
   // update the form
   const handleFormChange=(e)=>{
@@ -26,11 +32,17 @@ const CreateComponent = () => {
   }
 
   // to handle the form data upon submision
-  const handleFormSubmit=(e)=>{
+  const handleFormSubmit=async (e)=>{
     e.preventDefault();
-
+    // console.log(form);
+    const count=await getCount()
+    await createChitFund({...form,Organizer:publicKey.toString(),Id:count});
+    setIsCreated(true);
+    setJoinUrl(`${url+"join/"}${form.FundName}+${count}`)
     setForm(
       {
+        Id:'',
+        Organizer:'',
         Name:'',
         FundName:'',
         Description:'',
@@ -38,9 +50,6 @@ const CreateComponent = () => {
         DeadLine:'',
       }
     );
-    // console.log(form);
-    createChitFund(form);
-    setIsCreated(true);
   }
   return (
     <div className=' mx-60 my-[50px]'>
@@ -95,7 +104,7 @@ const CreateComponent = () => {
           styles=" mx-auto max-w-[200px] bg-blue-500 text-white rounded-[4px] mt-4 py-2 px-6"
           btnType="submit"
         />
-        {isCreated&&<p className=' font-semibold mt-2 mx-auto '>Your ChitFund Created Successfully!</p>}
+        {isCreated&&<p className=' font-semibold mt-2 mx-auto '>Your ChitFund Created Successfully! <br /> <span>Unique url: {joinUrl}</span> </p>}
       </div>
     </form>
     </div>
