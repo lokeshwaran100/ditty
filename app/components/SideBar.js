@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 
 export const MenuItems=({name,icon,handleClick,active})=>{
     return (
-        <div className={` py-3 rounded-[10px] p-1 cursor-pointer items-center mx-1 px-1 my-3 flex gap-4 ${name==active&&` bg-[#ccffff]`}`} onClick={handleClick}>
+        <div className={`py-3 rounded-[10px] p-1 cursor-pointer items-center mx-1 px-1 my-3 flex gap-4 ${name==active&&` bg-[#ccffff]`}`} onClick={handleClick}>
         <div className='mx-1'>
             <Image width={28} height={32} src={dashboard} alt={name}/>
         </div>

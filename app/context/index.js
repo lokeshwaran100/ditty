@@ -7,6 +7,7 @@ import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { utf8 } from "@project-serum/anchor/dist/cjs/utils/bytes";
 import { findProgramAddressSync } from "@project-serum/anchor/dist/cjs/utils/pubkey";
 import axios from "axios";
+
 const StateContext=createContext();
 
 const StateContextProvider=({children})=>{
@@ -16,22 +17,40 @@ const StateContextProvider=({children})=>{
     const {publicKey}=useWallet();
     const anchorwallet=useAnchorWallet();
 
+    // to keep track of the loader
+    const [isLoading,setIsLoading]=useState(false);
+
+    // to keep track of all the created chitfunds
+    const [chitFunds,setChitFunds]=useState([]);
+
     // a fucntion to fetch all the chitFunds
     const fetchChitFunds=async()=>{
+        setIsLoading(true);
         try{
             const data=await axios.get(`${url}api/allFunds`);
-            return data.data.message;
+            setChitFunds(data.data.message)
         }
         catch(err)
         {
             console.log(err);
         }
+        setIsLoading(false);
     }
-    // to keep track of all the created chitfunds
-    const [chitFunds,setChitFunds]=useState([]);
 
     useEffect(() => {
-        setChitFunds(fetchChitFunds()); // Call the function to fetch data when the component mounts
+
+        // const fetchData = async () => {
+        //     try {
+        //         const response = await axios.get(`${url}api/allFunds`);
+        //         const data = response.data.message;
+        //         setChitFunds(data); // Set the chitFunds state with the fetched data
+        //     } catch (err) {
+        //         console.error(err);
+        //     }
+        // };
+    
+        // fetchData(); // Call the function to fetch data when the component mounts
+        fetchChitFunds();
       }, [url]);
 
     // to connect to the smart contract
@@ -45,11 +64,13 @@ const StateContextProvider=({children})=>{
     // to create a chitfund in the blockchain
     const createChitFund=async(form)=>{
         // console.log("organiser",publicKey);
+        
         console.log("Smart contracts",CHIT_FUND_PUBLICKEY);
         // logic to create chit fund in the smartContract
         if(program&&publicKey)
         {
             try{
+                setIsLoading(true);
                 const [profilePda,profileBump]=findProgramAddressSync([utf8.encode(form.FundName),publicKey.toBuffer()],program.programId)
                 // calling the method from the blockchain
                 const tx=await program.methods
@@ -67,7 +88,7 @@ const StateContextProvider=({children})=>{
                     "Organiser": publicKey,
                     "TotalPot": form.TotalPot,
                     "Status": "Open",
-                    "Participants":[]
+                    "Participants":[publicKey]
                 }
 
                 const res=await axios.post(`${url}api/create`, data);
@@ -80,6 +101,7 @@ const StateContextProvider=({children})=>{
                 console.log(e);
                 // toast.error(e.toString());
             }
+            setIsLoading(false);
         }
         else{
             console.log("connect your wallet");
@@ -91,17 +113,20 @@ const StateContextProvider=({children})=>{
         return '1';
     }
     const addParticipant=async(name,ownerAddress)=>{
+        
+
         // logic to add participant to the chit fund
         if(program&&publicKey)
         {
+            const Owner=new PublicKey(ownerAddress)
             try{
-                const [profilePda,profileBump]=findProgramAddressSync([utf8.encode(name),publicKey.toBuffer()],program.programId)
+                const [profilePda,profileBump]=findProgramAddressSync([utf8.encode(name),Owner.toBuffer()],program.programId)
 
                 // calling the method from the blockchain
                 const tx=await program.methods
                 .join(name)
                 .accounts({
-                  organiser: ownerAddress,
+                  organiser: Owner,
                   chitFund: profilePda,
                   participant: publicKey
                 })
@@ -126,37 +151,53 @@ const StateContextProvider=({children})=>{
         else{
             console.log("connect your wallet");
         }
+        
         // console.log(form);  
         // console.log("Participant added successfully");
     }
 
     // function to bid an amount by a participant
-    const bid=async (chitFundName,participant,organiser,amount)=>{
+    const bid=async (organiser,participant,amount,chitFundName)=>{
+        setIsLoading(true);
+        console.log(organiser,participant,amount,chitFundName);
         try{
-            const [profilePda,profileBump]=findProgramAddressSync([utf8.encode(chitFundName),publicKey.toBuffer()],program.programId);
-            const tx = await program.methods
+            const Owner=new PublicKey(organiser);
+            const [profilePda,profileBump]=findProgramAddressSync([utf8.encode(chitFundName),Owner.toBuffer()],program.programId);
+            const tx= await program.methods
             .bid(chitFundName, amount)
             .accounts({
-              organiser: organiser,
+              organiser: Owner,
               chitFund: profilePda,
-              participant: participant,
+              participant: publicKey,
             })
             .rpc();
+        
+            // const tx = await program.methods
+            // .bid(chitFundName, amount)
+            // .accounts({
+            //   organiser: organiser,
+            //   chitFund: profilePda,
+            //   participant: participant,
+            // })
+            // .rpc();
         }
         catch(e)
         {
             console.log(e);
         }
+        setIsLoading(false);
     }
     // funciton to deposit an amount by the participant
     const deposit=async (chitFundName,participant,organiser,bidWinner,amount)=>{
+        
         try{
-            const [profilePda,profileBump]=findProgramAddressSync([utf8.encode(chitFundName),publicKey.toBuffer()],program.programId);
+            const Owner=new PublicKey(organiser)
+            const [profilePda,profileBump]=findProgramAddressSync([utf8.encode(chitFundName),Owner.toBuffer()],program.programId);
 
             const tx = await program.methods
             .deposit(chitFundName, amount)
             .accounts({
-              organiser: organiser,
+              organiser: Owner,
               chitFund: profilePda,
               participant: participant,
               bidWinner: bidWinner,
@@ -171,9 +212,49 @@ const StateContextProvider=({children})=>{
         {
             console.log(e);
         }
+        
     } 
+
+    // a funcion to fetch all the chitfunds in which i have participated
+    const getMyChitFunds=()=>{
+        
+        if(publicKey)
+        {
+            const filteredFunds=chitFunds.filter((funds)=>{
+                return funds.Participants.includes(publicKey.toString());
+            })
+            console.log("in context",filteredFunds);
+            
+            return filteredFunds
+        }
+        else
+        {
+            
+            console.log("please connect your wallet");
+        }
+    }
+    const getChitFundStatus=async (name,organiser)=>{
+        setIsLoading(true);
+        const Owner=new PublicKey(organiser)
+        const [profilePda,profileBump]=findProgramAddressSync([utf8.encode(name),Owner.toBuffer()],program.programId);
+        const data= await program.account.chitFund.fetch(
+            profilePda
+        );
+        setIsLoading(false);
+        return data
+    }
+    // to get the details of a particular fund
+    const getFundDetails=(name)=>{
+        
+        // console.log(name,"context");
+        const fund=chitFunds.filter((fund)=>{
+            return fund.ChitFundName==name
+        });
+        
+        return fund[0];
+    }
     return(
-        <StateContext.Provider value={{createChitFund,getCount,addParticipant,url,bid,deposit,chitFunds}}>
+        <StateContext.Provider value={{createChitFund,getCount,addParticipant,url,bid,deposit,chitFunds,isLoading,setIsLoading,getMyChitFunds,getFundDetails,publicKey,getChitFundStatus}}>
             {children}
         </StateContext.Provider>
     )

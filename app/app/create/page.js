@@ -4,10 +4,11 @@ import FormField from '@/components/FormField'
 import CustomButton from '@/components/CustomButton'
 import { useStateContext } from '@/context'
 import { useWallet } from '@solana/wallet-adapter-react'
+import Loader from '@/components/Loader'
 
 const CreateComponent = () => {
   // to get fetch the function from StateContext
-  const {createChitFund,url}=useStateContext();
+  const {createChitFund,url,isLoading}=useStateContext();
 
   const {publicKey}=useWallet();
 
@@ -32,7 +33,7 @@ const CreateComponent = () => {
   // update the form
   const handleFormChange=(e)=>{
     // console.log(e.target);
-    const {value,name}=e.target;
+    const {value,name,isLoading}=e.target;
     setForm({...form,[name]:value});
   }
 
@@ -61,7 +62,14 @@ const CreateComponent = () => {
     }
     // console.log(form);
   }
+
+  // if in loading state
+  if(isLoading)
+  {
+    return <Loader/>
+  }
   return (
+    
     <div className=' mx-60 my-[50px]'>
     <div className='bg-[#ccffff]	 p-8 rounded-[10px] flex flex-col'>
     <div className=" tracking-wider bg-[#039BE6] text-white font-epilogue text-2xl rounded-[10px] px-10 py-3 mx-auto">

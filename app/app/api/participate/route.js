@@ -7,7 +7,7 @@ export async function POST(req,res){
 
   const data=await req.json();
   console.log(data);
-
+  await dbConnect();
   const chitFund = await ChitFund.findOne({ ChitFundName: data.chitFundName });
 
   if (!chitFund) {
