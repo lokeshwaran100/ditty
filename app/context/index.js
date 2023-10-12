@@ -70,7 +70,7 @@ const StateContextProvider=({children})=>{
     const createChitFund=async(form)=>{
         // console.log("organiser",publicKey);
         
-        console.log("Smart contracts",CHIT_FUND_PUBLICKEY);
+        // console.log("Smart contracts",CHIT_FUND_PUBLICKEY);
         // logic to create chit fund in the smartContract
         if(program&&publicKey)
         {
@@ -163,7 +163,7 @@ const StateContextProvider=({children})=>{
     // function to bid an amount by a participant
     const bid=async (organiser,participant,amount,chitFundName)=>{
         setIsLoading(true);
-        console.log(organiser,participant,amount,chitFundName);
+        // console.log(organiser,participant,amount,chitFundName);
         try{
             const Owner=new PublicKey(organiser);
             const [profilePda,profileBump]=findProgramAddressSync([utf8.encode(chitFundName),Owner.toBuffer()],program.programId);

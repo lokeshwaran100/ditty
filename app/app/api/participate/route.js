@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 export async function POST(req,res){
 
   const data=await req.json();
-  console.log(data);
+  // console.log(data);
   await dbConnect();
   const chitFund = await ChitFund.findOne({ ChitFundName: data.chitFundName });
 

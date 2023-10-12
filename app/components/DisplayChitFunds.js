@@ -8,7 +8,7 @@ const DisplayChitFunds = ({chitFunds}) => {
     const router=useRouter();
     // to handle naviagtion to the bid route
     const handleClick=(name,organiser)=>{
-      console.log("You clicked on",name);
+      // console.log("You clicked on",name);
       router.push(`/bid/${name}/${organiser}`);
     } 
   return (

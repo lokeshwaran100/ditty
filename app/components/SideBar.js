@@ -34,7 +34,7 @@ const SideBar = () => {
                         handleClick={()=>{
                             setIsActive(link.name);
                             router.push(link.link);
-                            console.log("clicked");
+                            // console.log("clicked");
                         }}
                     />
                 )

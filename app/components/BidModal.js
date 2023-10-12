@@ -4,11 +4,13 @@ import { useStateContext } from '@/context'
 import React, { useEffect, useState } from 'react'
 import Loader from './Loader';
 import { useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 const TransactionModal = () => {
   const {isLoading,getChitFundStatus,program,publicKey,bid,deposit,loading,setIsLoading}=useStateContext();
   const {id:name,organiser}=useParams();
-  // if we are loading 
+  
+  const router=useRouter();
 
 
   const [value,setValue]=useState();
@@ -22,7 +24,7 @@ const TransactionModal = () => {
     try{
       const data=await getChitFundStatus(name,organiser);
       setFund(data);
-      console.log(fund);
+      // console.log(fund);
     }
     catch(err)
     {
@@ -42,6 +44,7 @@ const TransactionModal = () => {
       await bid(organiser,publicKey,value,name)
       console.log("The Bid is initiated");
       setIsLoading(false);
+      router.push('/');
     }
     catch(err)
     {
@@ -59,6 +62,7 @@ const TransactionModal = () => {
       await deposit(name,publicKey,organiser,fund.bidWinner,depositAmount);
       console.log("The Deposit is initiated");
       setIsLoading(false);
+      router.push('/');
     }
     catch(err)
     {

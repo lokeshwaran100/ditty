@@ -34,7 +34,7 @@ const NavBar = () => {
             <Image src={logo} alt="Your Logo" className="w-12 h-auto" />
             <h1 className='text-2xl font-bold '>Ditty</h1>
             {/* <button className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer">Connect</button> */}
-            <div className='hidden lg:block'>
+            <div className='hidden lg:block bg-black rounded-[5px]'>
             <WalletMultiButtonDynamic startIcon={<button className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer"/>}/>
             </div>
         </div>
@@ -66,7 +66,7 @@ const NavBar = () => {
                 )
             })
         }
-        <div className=' mx-3 my-5 hover:bg-blue-500 hover:opacity-[90%] bg-blue-500 w-[152px] rounded cursor-pointer'>
+        <div className=' mx-3 my-5  bg-black rounded-[5px] w-[152px]  cursor-pointer'>
           <WalletMultiButtonDynamic startIcon={<button className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer"/>}/>
         </div>
     </div>

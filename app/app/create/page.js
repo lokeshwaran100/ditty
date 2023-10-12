@@ -45,7 +45,7 @@ const CreateComponent = () => {
       // setForm({...form,Organizer:publicKey,Id:count})
       await createChitFund(form);
       setIsCreated(true);
-      console.log("form",form);
+      // console.log("form",form);
       setJoinUrl(`${url+"join/"}${form.FundName}+${form.Organizer}`)
       setForm(
         {
