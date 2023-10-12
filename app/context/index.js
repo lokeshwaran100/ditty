@@ -17,11 +17,22 @@ const StateContextProvider=({children})=>{
     const {publicKey}=useWallet();
     const anchorwallet=useAnchorWallet();
 
+    // a program which will connect to the smart contract
+    const program=useMemo(()=>{
+        if(anchorwallet){
+            const provider=new anchor.AnchorProvider(connection,anchorwallet,anchor.AnchorProvider.defaultOptions())
+            return new anchor.Program(idl,CHIT_FUND_PUBLICKEY,provider)
+        }
+    },[connection,anchorwallet]);
+
     // to keep track of the loader
     const [isLoading,setIsLoading]=useState(false);
 
     // to keep track of all the created chitfunds
     const [chitFunds,setChitFunds]=useState([]);
+
+    // to mantain the status of a particular chitFund
+    const [fundStatus,setFundStatus]=useState();
 
     // a fucntion to fetch all the chitFunds
     const fetchChitFunds=async()=>{
@@ -51,15 +62,9 @@ const StateContextProvider=({children})=>{
     
         // fetchData(); // Call the function to fetch data when the component mounts
         fetchChitFunds();
-      }, [url]);
+      }, [url,program]);
 
-    // to connect to the smart contract
-    const program=useMemo(()=>{
-        if(anchorwallet){
-            const provider=new anchor.AnchorProvider(connection,anchorwallet,anchor.AnchorProvider.defaultOptions())
-            return new anchor.Program(idl,CHIT_FUND_PUBLICKEY,provider)
-        }
-    },[connection,anchorwallet]);
+
 
     // to create a chitfund in the blockchain
     const createChitFund=async(form)=>{
@@ -131,7 +136,6 @@ const StateContextProvider=({children})=>{
                   participant: publicKey
                 })
                 .rpc();
-                toast.success('Successfully initialized user');
                 // to add participant to the database
                 const res=await axios.post(`${url}api/participate`, {
                         "chitFundName":name,
@@ -172,14 +176,7 @@ const StateContextProvider=({children})=>{
             })
             .rpc();
         
-            // const tx = await program.methods
-            // .bid(chitFundName, amount)
-            // .accounts({
-            //   organiser: organiser,
-            //   chitFund: profilePda,
-            //   participant: participant,
-            // })
-            // .rpc();
+
         }
         catch(e)
         {
@@ -206,7 +203,6 @@ const StateContextProvider=({children})=>{
             })
             .rpc();
             console.log(`Use 'solana confirm -v ${tx}' to see the logs`);
-
         }
         catch(e)
         {
@@ -234,14 +230,20 @@ const StateContextProvider=({children})=>{
         }
     }
     const getChitFundStatus=async (name,organiser)=>{
-        setIsLoading(true);
-        const Owner=new PublicKey(organiser)
-        const [profilePda,profileBump]=findProgramAddressSync([utf8.encode(name),Owner.toBuffer()],program.programId);
-        const data= await program.account.chitFund.fetch(
-            profilePda
-        );
-        setIsLoading(false);
-        return data
+        try{
+            setIsLoading(true);
+            const Owner=new PublicKey(organiser)
+            const [profilePda,profileBump]=findProgramAddressSync([utf8.encode(name),Owner.toBuffer()],program.programId);
+            const data= await program.account.chitFund.fetch(
+                profilePda
+            );
+            setIsLoading(false);
+            return data
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
     }
     // to get the details of a particular fund
     const getFundDetails=(name)=>{
@@ -254,7 +256,7 @@ const StateContextProvider=({children})=>{
         return fund[0];
     }
     return(
-        <StateContext.Provider value={{createChitFund,getCount,addParticipant,url,bid,deposit,chitFunds,isLoading,setIsLoading,getMyChitFunds,getFundDetails,publicKey,getChitFundStatus}}>
+        <StateContext.Provider value={{createChitFund,getCount,addParticipant,url,bid,deposit,chitFunds,isLoading,setIsLoading,getMyChitFunds,getFundDetails,publicKey,program,getChitFundStatus}}>
             {children}
         </StateContext.Provider>
     )

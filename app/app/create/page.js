@@ -109,7 +109,7 @@ const CreateComponent = () => {
           handleChange={(e)=>{handleFormChange(e)}}
           value={form.TotalPot}
         />
-        <FormField
+      <FormField
           label="DeadLine"
           inputType="date"
           handleChange={(e)=>{handleFormChange(e)}}
