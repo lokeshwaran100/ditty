@@ -175,8 +175,7 @@ const StateContextProvider=({children})=>{
               participant: publicKey,
             })
             .rpc();
-        
-
+    
         }
         catch(e)
         {
@@ -184,9 +183,34 @@ const StateContextProvider=({children})=>{
         }
         setIsLoading(false);
     }
+    // const deposit=async (chitFundName,participant,organiser,bidWinner,amount)=>{
+    //     setIsLoading(true);
+    //     console.log(chitFundName,participant.toString(),organiser,bidWinner.toString(),amount);
+    //     try{
+    //         const Owner=new PublicKey(organiser);
+    //         const [profilePda,profileBump]=findProgramAddressSync([utf8.encode(chitFundName),Owner.toBuffer()],program.programId);
+    //         const tx= await program.methods
+    //         .deposit(chitFundName, amount)
+    //         .accounts({
+    //           organiser: Owner,
+    //           chitFund: profilePda,
+    //           participant: publicKey,
+    //           bidWinner: bidWinner,
+    //           cf: profilePda,
+
+    //         })
+    //         .rpc();
+    
+    //     }
+    //     catch(e)
+    //     {
+    //         console.log(e);
+    //     }
+    //     setIsLoading(false);
+    // }
     // funciton to deposit an amount by the participant
     const deposit=async (chitFundName,participant,organiser,bidWinner,amount)=>{
-        
+        // console.log(chitFundName,participant.toString(),organiser,bidWinner.toString(),amount);
         try{
             const Owner=new PublicKey(organiser)
             const [profilePda,profileBump]=findProgramAddressSync([utf8.encode(chitFundName),Owner.toBuffer()],program.programId);
@@ -199,7 +223,7 @@ const StateContextProvider=({children})=>{
               participant: participant,
               bidWinner: bidWinner,
               cf: profilePda,
-              systemProgram: web3.SystemProgram.programId,
+              systemProgram: SystemProgram.programId,
             })
             .rpc();
             console.log(`Use 'solana confirm -v ${tx}' to see the logs`);
