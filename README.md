@@ -1,4 +1,4 @@
-# Ditty
+# <img src="doc/ditty-logo.png" width="23px" alt="ditty-logo"> Ditty
 Decentralized kitty parties aka chit funds application build on Solana blockchain
 
 A Decentralized kitty application built on Solana blockchain is a type of financial application that allows users to create and manage kitty parties in a trustless and secure manner. Chit funds are a type of informal savings scheme that is popular in many developing countries. In a chit fund, each member contributes a fixed amount of money on a regular basis. The total amount of money collected is then distributed to one member of the group, who is selected through a auction.
