@@ -11,7 +11,7 @@ import axios from "axios";
 const StateContext=createContext();
 
 const StateContextProvider=({children})=>{
-    const url="http://localhost:3000/";
+    const url=process.env.NEXT_PUBLIC_URL;
     // to connect to the smart contracts
     const {connection}=useConnection();
     const {publicKey}=useWallet();
@@ -253,6 +253,27 @@ const StateContextProvider=({children})=>{
             console.log("please connect your wallet");
         }
     }
+	
+	// to get my created chitFunds
+    const getCreatedChitFunds=()=>{
+    
+        if(publicKey)
+        {
+            const filteredFunds=chitFunds.filter((funds)=>{
+                return funds.Organiser===publicKey.toString();
+            })
+            console.log("in context",filteredFunds);
+            
+            return filteredFunds
+        }
+        else
+        {
+            
+            console.log("please connect your wallet");
+        }
+    }
+	
+	
     const getChitFundStatus=async (name,organiser)=>{
         try{
             setIsLoading(true);
@@ -280,7 +301,7 @@ const StateContextProvider=({children})=>{
         return fund[0];
     }
     return(
-        <StateContext.Provider value={{createChitFund,getCount,addParticipant,url,bid,deposit,chitFunds,isLoading,setIsLoading,getMyChitFunds,getFundDetails,publicKey,program,getChitFundStatus}}>
+        <StateContext.Provider value={{createChitFund,getCount,addParticipant,url,bid,deposit,chitFunds,isLoading,setIsLoading,getMyChitFunds,getFundDetails,publicKey,program,getChitFundStatus,getCreatedChitFunds}}>
             {children}
         </StateContext.Provider>
     )

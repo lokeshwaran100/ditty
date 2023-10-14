@@ -18,11 +18,9 @@ const CreateComponent = () => {
   const [isCreated,setIsCreated]=useState(false);
   const [form,setForm]=useState({
     Organizer:'',
-    Name:'',
     FundName:'',
     Description:'',
-    TotalPot:'',
-    DeadLine:'',
+    TotalPot:''
   });
   const [joinUrl, setJoinUrl] = useState(url);
 
@@ -49,11 +47,9 @@ const CreateComponent = () => {
       setJoinUrl(`${url+"join/"}${form.FundName}+${form.Organizer}`)
       setForm(
         {
-          Name:'',
           FundName:'',
           Description:'',
-          TotalPot:'',
-          DeadLine:'',
+          TotalPot:''
         }
       );
     }
@@ -70,25 +66,17 @@ const CreateComponent = () => {
   }
   return (
     
-    <div className=' mx-60 my-[50px]'>
+    <div className=' mx-60 my-[20px]'>
     <div className='bg-[#ccffff]	 p-8 rounded-[10px] flex flex-col'>
-    <div className=" tracking-wider bg-[#039BE6] text-white font-epilogue text-2xl rounded-[10px] px-10 py-3 mx-auto">
+    <div className=" tracking-wider text-black font-epilogue text-2xl rounded-[10px] px-10 py-2 mx-auto font-bold">
       Create Your ChitFund
     </div>
     <form onSubmit={handleFormSubmit}>
     <div className='flex gap-1'>
         <FormField
-          label="Name"
-          isTextArea={false}
-          placeholder="Enter your Name"
-          handleChange={(e)=>{handleFormChange(e)}}
-          value={form.Name}
-          
-        />
-        <FormField
           label="FundName"
           isTextArea={false}
-          placeholder="Enter your ChitFund Name"
+          placeholder="Enter your Chit Fund Name"
           handleChange={(e)=>{handleFormChange(e)}}
           value={form.FundName}
         />
@@ -105,18 +93,12 @@ const CreateComponent = () => {
       <div className='flex gap-1'>
       <FormField
           label="TotalPot"
-          placeholder="SOL"
+          placeholder="LAMPORTS"
           handleChange={(e)=>{handleFormChange(e)}}
           value={form.TotalPot}
         />
-      <FormField
-          label="DeadLine"
-          inputType="date"
-          handleChange={(e)=>{handleFormChange(e)}}
-          value={form.DeadLine}
-        />
       </div>
-      <div className='mx-auto flex flex-col justify-center mt-5'>
+      <div className='mx-auto flex flex-col justify-center'>
         <CustomButton 
           name="Submit"
           styles=" mx-auto max-w-[200px] bg-blue-500 text-white rounded-[4px] mt-4 py-2 px-6"
