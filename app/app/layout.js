@@ -20,15 +20,15 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
+      <WalletConnectionProvider>
       <StateContextProvider>
-        <WalletConnectionProvider>
         <NavBar/>
         <div className='flex gap-1'>
           <SideBar/>
           {children}
         </div>
-        </WalletConnectionProvider>
       </StateContextProvider>
+      </WalletConnectionProvider>
       </body>
     </html>
   )

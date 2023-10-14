@@ -3,19 +3,30 @@ import { useParams } from 'next/navigation'
 import React from 'react'
 import { useRouter } from 'next/navigation'
 import { useStateContext } from '@/context'
+import Loader from '@/components/Loader'
 
 const page = () => {
     // to get the name of the group form the url
     const {id}=useParams();
+    // console.log("in the join",id);
+    // http://localhost:3000/join/MoneyCircle+EKfM2mArvj1FP7B6WxN5MabfmwRd9AmSR1MwPaAzhGy8
     const name=id.substring(0,id.search('%'));
-    const {addParticipant}=useStateContext();
+    const ownerAddress=id.substring(id.search('%2B')+3,id.length);
+    console.log(name,ownerAddress);
+    const {addParticipant,isLoading}=useStateContext();
 
     const router=useRouter();
     // to handle the join group button
     const handleClick=async()=>{
         console.log("You joined ",name);
-        await addParticipant();
+        await addParticipant(name,ownerAddress);
         router.push("/");
+    }
+
+    // if in loading state
+    if(isLoading)
+    {
+      return <Loader/>
     }
     return (
         <div className="w-full flex justify-center ">
