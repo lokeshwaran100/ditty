@@ -15,12 +15,9 @@ const Card = ({handleClick,ChitFundName,Organiser,Participants,TotalPot,Status})
       <div className='flex justify-between'>
         <div>
           <p className='text-slate-700'>TotalPot:</p> 
-          <p>{TotalPot} Sol</p>
+          <p>{TotalPot} LAMPORTS</p>
         </div>
-          <div>
-              <p className='text-slate-700'> Current bid: </p>
-              <p>10 Sol</p>
-          </div>
+
         </div>
             <div>
             <p className='text-slate-700'>Organiser</p>
