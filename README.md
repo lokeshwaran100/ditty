@@ -51,3 +51,24 @@ In addition to the above revenue models, decentralized chit fund dApps could als
 
 The potential for revenue generation in the decentralized chit fund space is significant. As more and more people adopt cryptocurrency and blockchain technology, there is a growing demand for financial services that are decentralized and transparent. Decentralized chit fund dApps can meet this demand and provide a valuable service to their users.
 
+## Testing Instructions
+
+1. **Access the Application**: Open the following link in your web browser: [ChitFund Application](https://ditty-sol.vercel.app/).
+
+2. **Connect Your Phantom Wallet**: To interact with the application on the Solana Devnet, you'll need to connect your Phantom wallet. Make sure you have Phantom wallet installed and set up in your browser.
+
+3. **Create a ChitFund**: In the application, navigate to the "Create" section. Enter the name and the amount for the chit fund you want to create. This will generate a unique link for your chit fund.
+
+4. **Invite Participants**: Share the unique link generated in step 3 with three participants. They can join your chit fund using the unique link.
+
+5. **Monthly Bidding Process**: After all the participants have joined, the monthly bidding process will start automatically. Each person will try to bid as low as possible.
+
+6. **Determine the Winner**: After the bidding process, the person with the lowest bid will win the bidding for the month.
+
+7. **Fund Distribution**: All other participants will deposit their share into the ChitFund, and the funds will be distributed to the bid winner.
+
+8. **Repeat**: The same cycle will continue for the next month, with a new round of bidding and fund distribution.
+
+Please ensure that you're using the application on the Solana Devnet and have the Phantom wallet connected for testing.
+
+If you'd like to contribute to this project or report any issues, please visit our [GitHub repository](https://github.com/lokeshwaran100/ditty).
