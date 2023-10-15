@@ -35,21 +35,13 @@ Here are some specific examples of how decentralized kitty app on Solana blockch
 
 Ditty have the potential to make financial services more accessible and inclusive for everyone.
 
-
-
-
-
 ## Revenue Model 
 
+**1$ Creation Fee:** For every chit fund account that is created the dapp can charge a fixed fee of 1$ 
 
-Advertising: The dApp could sell advertising space to businesses that want to reach its users. This would be a relatively low-effort way to generate revenue, but it is important to ensure that the ads are relevant to the dApp's users and do not disrupt their experience.
+**Advertising:** The dApp could sell advertising space to businesses that want to reach its users. This would be a relatively low-effort way to generate revenue, but it is important to ensure that the ads are relevant to the dApp's users and do not disrupt their experience.
 
-
-The best revenue model for a decentralized chit fund dApp will depend on a number of factors, such as the target market, the features of the dApp, and the overall business strategy.
-
-In addition to the above revenue models, decentralized chit fund dApps could also explore new and innovative ways to generate revenue. For example, they could use blockchain technology to create new types of financial products and services. They could also partner with other businesses to offer integrated services.
-
-The potential for revenue generation in the decentralized chit fund space is significant. As more and more people adopt cryptocurrency and blockchain technology, there is a growing demand for financial services that are decentralized and transparent. Decentralized chit fund dApps can meet this demand and provide a valuable service to their users.
+In addition to the above revenue models, decentralized chit fund dApps could also explore new and innovative ways to generate revenue. For example, we could use blockchain technology to create new types of financial products and services. We could also partner with other businesses to offer integrated services.
 
 ## Testing Instructions
 
@@ -57,18 +49,18 @@ The potential for revenue generation in the decentralized chit fund space is sig
 
 2. **Connect Your Phantom Wallet**: To interact with the application on the Solana Devnet, you'll need to connect your Phantom wallet. Make sure you have Phantom wallet installed and set up in your browser.
 
-3. **Create a ChitFund**: In the application, navigate to the "Create" section. Enter the name and the amount for the chit fund you want to create. This will generate a unique link for your chit fund.
+3. **Create a ChitFund**: In the application, navigate to the "Create" section. Enter the name (without spaces), description and the mpnthly committed amount per participant for the chit fund you want to create. This will generate a unique link for your chit fund.
 
-4. **Invite Participants**: Share the unique link generated in step 3 with three participants. They can join your chit fund using the unique link.
+4. **Invite Participants**: Share the unique link generated in step 3 with other participants (currently the chitfund only supports 3 participants and organizer will be the default 1st participant). The other participants can join your chit fund using the unique link.
 
-5. **Monthly Bidding Process**: After all the participants have joined, the monthly bidding process will start automatically. Each person will try to bid as low as possible.
+5. **Monthly Bidding Process**: After all the participants have joined, the monthly bidding process will start automatically. The participants who is in need of urgent cash will try to bid as low as possible.
 
-6. **Determine the Winner**: After the bidding process, the person with the lowest bid will win the bidding for the month.
+6. **Determine the Winner**: After the bidding process, the participant with the lowest bid will win the bidding for that month.
 
-7. **Fund Distribution**: All other participants will deposit their share into the ChitFund, and the funds will be distributed to the bid winner.
+7. **Fund Distribution**: All other participants will deposit their share into the ChitFund PDA account, and the funds will be distributed to the bid winner.
 
 8. **Repeat**: The same cycle will continue for the next month, with a new round of bidding and fund distribution.
 
-Please ensure that you're using the application on the Solana Devnet and have the Phantom wallet connected for testing.
+**Note:** Please ensure that you're using the application on the Solana Devnet and have the Phantom wallet connected for testing.
 
 If you'd like to contribute to this project or report any issues, please visit our [GitHub repository](https://github.com/lokeshwaran100/ditty).
