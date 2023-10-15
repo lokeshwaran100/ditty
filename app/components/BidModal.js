@@ -7,7 +7,7 @@ import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
 const TransactionModal = () => {
-  const {isLoading,getChitFundStatus,program,publicKey,bid,deposit,loading,setIsLoading}=useStateContext();
+  const {isLoading,getChitFundStatus,program,publicKey,bid,deposit,loading,setIsLoading,getLowestBid}=useStateContext();
   const {id:name,organiser}=useParams();
   
   const router=useRouter();
@@ -24,7 +24,7 @@ const TransactionModal = () => {
     try{
       const data=await getChitFundStatus(name,organiser);
       setFund(data);
-      // console.log(fund);
+      console.log(fund);
     }
     catch(err)
     {
@@ -33,6 +33,10 @@ const TransactionModal = () => {
   }
   useEffect(()=>{
     handleChitStatus(name,organiser)
+    if(fund)
+    {
+      getLowestBid
+    }
     // console.log(fund);
   },[name,organiser,program]);
 
