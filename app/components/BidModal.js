@@ -7,7 +7,7 @@ import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
 const TransactionModal = () => {
-  const {isLoading,getChitFundStatus,program,publicKey,bid,deposit,loading,setIsLoading,getLowestBid}=useStateContext();
+  const {isLoading,getChitFundStatus,program,publicKey,bid,deposit,loading,setIsLoading}=useStateContext();
   const {id:name,organiser}=useParams();
   
   const router=useRouter();
@@ -33,10 +33,10 @@ const TransactionModal = () => {
   }
   useEffect(()=>{
     handleChitStatus(name,organiser)
-    if(fund)
-    {
-      getLowestBid
-    }
+    // if(fund)
+    // {
+      // console.log(getLowestBid());
+    // }
     // console.log(fund);
   },[name,organiser,program]);
 
