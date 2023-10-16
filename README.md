@@ -35,14 +35,6 @@ Here are some specific examples of how decentralized kitty app on Solana blockch
 
 Ditty have the potential to make financial services more accessible and inclusive for everyone.
 
-## Revenue Model 
-
-**1$ Creation Fee:** For every chit fund account that is created the dapp can charge a fixed fee of 1$ 
-
-**Advertising:** The dApp could sell advertising space to businesses that want to reach its users. This would be a relatively low-effort way to generate revenue, but it is important to ensure that the ads are relevant to the dApp's users and do not disrupt their experience.
-
-In addition to the above revenue models, decentralized chit fund dApps could also explore new and innovative ways to generate revenue. For example, we could use blockchain technology to create new types of financial products and services. We could also partner with other businesses to offer integrated services.
-
 ## Testing Instructions
 
 1. **Access the Application**: Open the following link in your web browser: [ChitFund Application](https://ditty-sol.vercel.app/).
@@ -62,5 +54,13 @@ In addition to the above revenue models, decentralized chit fund dApps could als
 8. **Repeat**: The same cycle will continue for the next month, with a new round of bidding and fund distribution.
 
 **Note:** Please ensure that you're using the application on the Solana Devnet and have the Phantom wallet connected for testing.
+
+## Revenue Model 
+
+**1$ Creation Fee:** For every chit fund account that is created the dapp can charge a fixed fee of 1$ 
+
+**Advertising:** The dApp could sell advertising space to businesses that want to reach its users. This would be a relatively low-effort way to generate revenue, but it is important to ensure that the ads are relevant to the dApp's users and do not disrupt their experience.
+
+In addition to the above revenue models, decentralized chit fund dApps could also explore new and innovative ways to generate revenue. For example, we could use blockchain technology to create new types of financial products and services. We could also partner with other businesses to offer integrated services.
 
 If you'd like to contribute to this project or report any issues, please visit our [GitHub repository](https://github.com/lokeshwaran100/ditty).
