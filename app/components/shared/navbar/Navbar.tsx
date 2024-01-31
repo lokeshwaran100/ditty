@@ -9,8 +9,10 @@ const WalletMultiButtonDynamic = dynamic(
     async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
     { ssr: false }
 );
+import { useWallet } from "@solana/wallet-adapter-react";
 
 const Navbar = () => {
+    const {publicKey}=useWallet();
   return (
     <NavContainer>
         <div className="flex items-center">
@@ -19,9 +21,13 @@ const Navbar = () => {
             <h1 className="text-2xl font-semibold">BlockFund</h1>
             </Link>
         </div>
+        <div className=' flex items-center gap-2'>
+        {
+            publicKey&&<Button>Create Fund</Button>
+        }
         <div className='bg-black rounded-[5px] w-fit'>
         <WalletMultiButtonDynamic startIcon={<Button/>}/>
-
+        </div>
         </div>
     </NavContainer>
   )
