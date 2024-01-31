@@ -5,6 +5,7 @@ import { SiHiveBlockchain } from "react-icons/si";
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
+import { CreateDialog } from '@/components/custom/Dialog';
 const WalletMultiButtonDynamic = dynamic(
     async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
     { ssr: false }
@@ -23,7 +24,7 @@ const Navbar = () => {
         </div>
         <div className=' flex items-center gap-2'>
         {
-            publicKey&&<Button>Create Fund</Button>
+            publicKey&&<CreateDialog><Button>Create Fund</Button></CreateDialog>
         }
         <div className='bg-black rounded-[5px] w-fit'>
         <WalletMultiButtonDynamic startIcon={<Button/>}/>
