@@ -21,7 +21,7 @@ export function CreateDialog({children} : {children:ReactNode}) {
   const [isCreated,setIsCreated]=useState(false);
   const {publicKey}=useWallet();
   const [form,setForm]=useState({
-    Organizer:publicKey.toString(),
+    Organizer: publicKey?.toString(),
     FundName:'',
     Description:'',
     TotalPot:''
